@@ -3,7 +3,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-    entry: './src/index.ts',
+    entry: {
+        main: './src/app.ts',
+    },
     devtool: 'inline-source-map',
     devServer: {
         contentBase: './dist',
@@ -11,7 +13,9 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            title: 'Test App',
+            title: 'Archetype App',
+            filename: 'index.html',
+            path: path.join(__dirname, 'dist'),
         }),
     ],
     module: {
@@ -22,16 +26,26 @@ module.exports = {
                 exclude: /node-modules/,
             },
             {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader'],
-            }
+                test: /\.(scss)$/,
+                use: [
+                    { loader: 'style-loader' },
+                    { loader: 'css-loader' },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: () => { return [ require('autoprefixer') ] } 
+                        }
+                    },
+                    { loader: 'sass-loader' },
+                ]
+            },
         ]
     },
     resolve: {
         extensions: [ '.tsx', '.ts', '.js' ],
     },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
     },
 };
